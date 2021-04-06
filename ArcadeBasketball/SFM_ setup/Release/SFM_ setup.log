@@ -1,0 +1,68 @@
+﻿  Actor.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\SceneNode.h(4,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  Animation.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Animation.h(2,10): fatal error C1083: Cannot open include file: 'SFML/Graphics/Sprite.hpp': No such file or directory
+  Animation2.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Animation2.h(2,10): fatal error C1083: Cannot open include file: 'SFML/Graphics/Sprite.hpp': No such file or directory
+  Application.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Command.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  BasketBallGame.cpp
+  BloomEffect.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\PostEffect.h(2,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  Button.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Component.h(2,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  Command.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Command.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  CommandQueue.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Command.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  Component.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Component.h(2,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  Container.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Component.h(2,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  DataTables.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\SceneNode.h(4,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  Entity.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\SceneNode.h(4,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  GameOverState.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\State.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  GameState.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\State.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  jsonFrameParser.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\jsonFrameParser.h(4,10): fatal error C1083: Cannot open include file: 'SFML/Graphics/Rect.hpp': No such file or directory
+  Label.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Component.h(2,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  MenuState.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\State.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  MusicPlayer.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\MusicPlayer.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  PauseState.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\State.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  Compiling...
+  Player.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Command.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  PostEffect.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\PostEffect.h(2,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  SceneNode.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\SceneNode.h(4,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  SettingsState.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\State.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  SoundNode.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\SceneNode.h(4,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  SoundPlayer.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\SoundPlayer.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Vector2.hpp': No such file or directory
+  Source.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Command.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  SpriteNode.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\SceneNode.h(4,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  State.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\State.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  StateStack.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\State.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  TextNode.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\SceneNode.h(4,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
+  TitleState.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\State.h(5,10): fatal error C1083: Cannot open include file: 'SFML/System/Time.hpp': No such file or directory
+  Utility.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\Utility.h(2,10): fatal error C1083: Cannot open include file: 'SFML/Window/Keyboard.hpp': No such file or directory
+  World.cpp
+C:\C++\Projects\ArcadeBasketball\ArcadeBasketball\SFM_ setup\SceneNode.h(4,10): fatal error C1083: Cannot open include file: 'SFML/System/NonCopyable.hpp': No such file or directory
