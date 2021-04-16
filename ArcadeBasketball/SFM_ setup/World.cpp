@@ -5,12 +5,15 @@
 #include "TextNode.h"
 #include "ParticleNode.h"
 #include "SoundNode.h"
+#include "Utility.h"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <iostream>
+#include <fstream>
 
 std::mt19937 REng{ std::random_device{}() };
 float getRightLineBound(float y)
@@ -46,6 +49,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 
+	getHeadPaths();
 	loadTextures();
 	buildScene();
 
@@ -63,6 +67,7 @@ void World::update(sf::Time dt)
 	// Setup commands to destroy entities, and guide missiles
 	updateAI();
 	adaptNPCPosition();
+	adaptBallPosition();
 
 	// Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
 	while (!mCommandQueue.isEmpty())
@@ -81,6 +86,7 @@ void World::update(sf::Time dt)
 
 	updateBallState();
 	updateSounds();
+	updateText();
  	adaptWorldView();
 }
 
@@ -100,15 +106,49 @@ bool World::hasAlivePlayer() const
 	return !mPlayerActor->isMarkedForRemoval();
 }
 
+bool World::isGameOver()
+{
+	if (game.isWinner())
+	{
+		return true;
+	}
+	return false;
+}
+
+void World::getHeadPaths()
+{
+	std::string line;
+	std::ifstream myfile("HeadPath.txt");
+	if (myfile.is_open())
+	{
+		getline(myfile, line);
+		head1 = line;
+		getline(myfile, line);
+		head2 = line;
+		getline(myfile, line);
+		head3 = line; 
+		getline(myfile, line);
+		head4 = line;
+
+		myfile.close();
+	}
+}
+
 void World::loadTextures()
 {
 	mTextures.load(Textures::Background, "Media/Textures/temp_background.jpg");
 	mTextures.load(Textures::Court, "Media/Textures/basketballCourt.png");
-	mTextures.load(Textures::Hero2, "Media/Textures/hero2.png");
 	mTextures.load(Textures::Hoop, "Media/Textures/Scoring_Animation2.png");
 	mTextures.load(Textures::Ball, "Media/Textures/basketball.png");
+	mTextures.load(Textures::RedTeam, "Media/Textures/RedPlayer.png");
+	mTextures.load(Textures::BlueTeam, "Media/Textures/BluePlayer.png");
 
+	mTextures.load(Textures::Head1, "Media/Textures/" + head1);
+	mTextures.load(Textures::Head2, "Media/Textures/" + head2);
+	mTextures.load(Textures::Head3, "Media/Textures/" + head3);
+	mTextures.load(Textures::Head4, "Media/Textures/" + head4);
 
+	//characters->clear();
 
 }
 
@@ -122,7 +162,7 @@ void World::adaptPlayerPosition()
 	position.x = std::max(position.x, getLeftLineBound(mPlayerActor->getPosition().y) + borderDistance);
 	position.x = std::min(position.x, getRightLineBound(mPlayerActor->getPosition().y) - borderDistance);
 	position.y = std::max(position.y, -10.f);
-	position.y = std::min(position.y, 455.f);
+	position.y = std::min(position.y, 430.f);
 	mPlayerActor->setPosition(position);
 }
 
@@ -145,12 +185,28 @@ void World::adaptNPCPosition()
 			position.x = std::max(position.x, getLeftLineBound(AI.getPosition().y) + borderDistance);
 			position.x = std::min(position.x, getRightLineBound(AI.getPosition().y) - borderDistance);
 			position.y = std::max(position.y, -10.f);
-			position.y = std::min(position.y, 455.f);
+			position.y = std::min(position.y, 430.f);
 
 			AI.setPosition(position);
 		});
 
 	mCommandQueue.push(adaptPosition);
+}
+
+void World::adaptBallPosition()
+{
+	sf::Vector2f position = ActiveBall->getPosition();
+
+	if (position.x < 400 || position.x > 3600)
+	{
+		ActiveBall->stopMovingToo();
+		ActiveBall->setPosition(BALL_SPAWN);
+	}
+	else if (position.y < -700 || position.y > 450)
+	{
+		ActiveBall->stopMovingToo();
+		ActiveBall->setPosition(BALL_SPAWN);
+	}
 }
 
 void World::adaptActorVelocity(Actor* actor)
@@ -206,65 +262,56 @@ void World::handleCollisions()
 			second.stopMovingToo();
 			if (second.isScore())
 			{
-				std::uniform_int_distribution<unsigned int> random{ 1, 2 };
-
-				int randomSound = random(REng);
-				if (randomSound == 1)
-					mSounds.play(SoundEffect::Swish);
-				else
-					mSounds.play(SoundEffect::Rim);
-
-				first.setState(Actor::State::score);
-				second.setPosition(BALL_SPAWN);
-				if (first.getDirection() == Actor::Direction::Left)
-					game.Team_1_Score(2);
-				else
-					game.Team_2_Score(2);
+				score(&first);
 			}
 			else
 			{
-				mSounds.play(SoundEffect::Rim);
-				first.rebound(ActiveBall);
-				freeBall = true;
+				rebound(&first);
 			}
 		}
 		if (matchesCategories(pair, Category::Player, Category::AI))
-		{ /*
+		{ 
 			auto& first = static_cast<Actor&>(*pair.first);
 			auto& second = static_cast<Actor&>(*pair.second);
-			if (first.getDirection() == Actor::Direction::Left && first.getPosition().x > second.getPosition().x)
+			if (first.getBall() != nullptr)
 			{
-				first.setPosition(second.getPosition().x + 50, first.getPosition().y);
-				second.setPosition(first.getPosition().x - 50, second.getPosition().y);
+				std::uniform_int_distribution<unsigned int> random{ 1, 200 };
+
+				int randomSteal = random(REng);
+				if (randomSteal == 1)
+				{
+					second.giveBall(ActiveBall);
+				}
 			}
-			if (first.getDirection() == Actor::Direction::Left && first.getPosition().x < second.getPosition().x)
-			{
-				first.setPosition(second.getPosition().x - 50, first.getPosition().y);
-				second.setPosition(first.getPosition().x + 50, second.getPosition().y);
-			}
-			*/
+
 		}
 		if (matchesCategories(pair, Category::AI, Category::Ball)) {
 			auto& first = static_cast<Actor&>(*pair.first);
 			auto& second = static_cast<Actor&>(*pair.second);
 
-			if (first.getBall() == nullptr)
+			if (first.getBall() == nullptr && (!ActiveBall->isMovingToo() || ActiveBall->isPassing()))
 			{
-				first.stopMovingToo();
-				first.giveBall(&second);
-				second.setTeam(first.getTeam());
-				freeBall = false;
+				if (ActiveBall->getTeam() == Actor::Team::None || first.isAttack())
+				{
+					first.stopMovingToo();
+					first.giveBall(&second);
+					second.setTeam(first.getTeam());
+					freeBall = false;
+				}
 			}
 		}
-		else if (matchesCategories(pair, Category::Player, Category::Ball)) {
+		if (matchesCategories(pair, Category::Player, Category::Ball)) {
 			auto& first = static_cast<Actor&>(*pair.first);
 			auto& second = static_cast<Actor&>(*pair.second);
 
-			if (first.getBall() == nullptr)
+			if (first.getBall() == nullptr && (!ActiveBall->isMovingToo() || ActiveBall->isPassing()))
 			{
-				first.giveBall(&second);
-				second.setTeam(first.getTeam());
-				freeBall = false;
+				if (ActiveBall->getTeam() == Actor::Team::None || first.isAttack())
+				{
+					first.giveBall(&second);
+					second.setTeam(first.getTeam());
+					freeBall = false;
+				}
 			}
 
 		}
@@ -292,8 +339,14 @@ void World::updateAI()
 			}
 			else if (AI->getTeam() != ActiveBall->getTeam())
 			{
+				Actor* assignment = AI->getAssignment();
 				AI->setGameState(Actor::GameState::Defense);
-				sf::Vector2f MoveTooPosition((100 + ActiveBall->getPosition().x), ActiveBall->getPosition().y);
+				sf::Vector2f MoveTooPosition;
+
+				if (AI->getTeam() == Actor::Team::Team_2)
+					MoveTooPosition = sf::Vector2f((100 + assignment->getPosition().x), assignment->getPosition().y);
+				else 
+					MoveTooPosition = sf::Vector2f((assignment->getPosition().x - 100), assignment->getPosition().y);
 
 				if (InArea(MoveTooPosition, AI))
 					AI->stopMovingToo();
@@ -304,25 +357,36 @@ void World::updateAI()
 			{
 				AI->setGameState(Actor::GameState::Offense);
 
-				if (AI->getBall() != nullptr)
+				sf::Vector2f moveTooPosition;
+				if (AI->isShootingPosition())
 				{
-					sf::Vector2f moveTooPosition;
-					if (AI->isShootingPosition())
-						moveTooPosition = sf::Vector2f(AI->getShootingPosition());
-					else
-					{
-						moveTooPosition = sf::Vector2f(AI->getNewShootingPosition());
-						AI->stopMovingToo();
-					}
-					if (InArea(moveTooPosition, AI))
-					{
-						AI->attack();
-					}
-					else if (!AI->isMovingToo())
-					{
-						AI->moveTo(moveTooPosition);
-					}
+					moveTooPosition = sf::Vector2f(AI->getShootingPosition());
 				}
+				else
+				{
+					moveTooPosition = sf::Vector2f(AI->getNewShootingPosition());
+					AI->stopMovingToo();
+				}
+				if (InArea(moveTooPosition, AI) && AI->getState() != Actor::State::Shoot)
+				{
+					std::uniform_int_distribution<unsigned int> random{ 1, 5 };
+
+					int randomAction = random(REng);
+					AI->stopMovingToo();
+
+					if (randomAction > 2)
+						AI->attack();
+					else
+						AI->passBall();
+				}
+				else if (!AI->isMovingToo() && AI->getState() != Actor::State::Shoot)
+				{
+					AI->moveTo(moveTooPosition);
+				}
+			}
+			if (ActiveBall->isShooting() || ActiveBall->isRebounding())
+			{
+				AI->stopMovingToo();
 			}
 			
 			AI->updateAIMovement();
@@ -348,12 +412,76 @@ void World::updateBallState()
 	freeBall = true;
 }
 
+void World::updateText()
+{
+	if (mPlayerActor->getPosition().x > 1200 && mPlayerActor->getPosition().x < 3000)
+	{
+		blueTeamScore->setPosition((mPlayerActor->getPosition().x + 500), blueTeamScore->getPosition().y);
+		redTeamScore->setPosition((mPlayerActor->getPosition().x - 500), redTeamScore->getPosition().y);
+	}
+
+	blueTeamScore->setString("Blue " + std::to_string(game.get_Team_2_Score()));
+	redTeamScore->setString("Red " + std::to_string(game.get_Team_1_Score()));
+}
+
+void World::score(Actor* hoop)
+{
+	ActiveBall->setShooting(false);
+	std::uniform_int_distribution<unsigned int> random{ 1, 2 };
+
+	int randomSound = random(REng);
+	if (randomSound == 1)
+		mSounds.play(SoundEffect::Swish);
+	else
+		mSounds.play(SoundEffect::Rim);
+
+	hoop->setState(Actor::State::score);
+
+	if (hoop->getDirection() == Actor::Direction::Right)
+	{
+		ActiveBall->setPosition(AI_PG->getPosition());
+		game.Team_1_Score(2);
+	}
+	else
+	{
+		mPlayerActor->giveBall(ActiveBall);
+		game.Team_2_Score(2);
+	}
+	freeBall = false;
+}
+
+void World::rebound(Actor* hoop)
+{
+	mSounds.play(SoundEffect::Rim);
+	hoop->rebound(ActiveBall);
+	freeBall = true;
+}
+
+Actor* World::getRandomPlayer(Actor::Team team)
+{
+	std::uniform_int_distribution<unsigned int> random{ 1, 2 };
+	int randomPlayer = random(REng);
+	int i = 1;
+	for (Actor* player : Players) 
+	{
+		
+		if (player->getTeam() == team)
+		{
+			return player;
+			if (1 == i)
+				return player;
+			else
+				++i;
+		}
+	}
+}
+
 void World::buildScene()
 {
 	// Initialize the different layers
 	for (std::size_t i = 0; i < LayerCount; ++i)
 	{
-		Category::Type category = (i == World::Layer::Player) ? Category::SceneAirLayer : Category::None;
+		Category::Type category = (i == World::Layer::FrontCourt) ? Category::SceneAirLayer : Category::None;
 
 		SceneNode::Ptr layer(new SceneNode(category));
 		mSceneLayers[i] = layer.get();
@@ -373,46 +501,123 @@ void World::buildScene()
 	textureRect.height += static_cast<int>(viewHeight);
 
 	// Add the background sprite to the scene
-	
+
 	std::unique_ptr<SpriteNode> background(new SpriteNode(BackgroundTexture, textureRect));
 	background->setPosition(mWorldBounds.left, mWorldBounds.top - viewHeight);
-	mSceneLayers[Background]->attachChild(std::move(background));
+	mSceneLayers[Background]->attachChild(std::move(background));	
 	
 
 	std::unique_ptr<SpriteNode> court(new SpriteNode(CourtTexture, textureRect));
 	court->setPosition(mWorldBounds.left, mWorldBounds.top - viewHeight + 570);
 	mSceneLayers[Court]->attachChild(std::move(court));
 
-	// Add player's aircraft
-	std::unique_ptr<Actor> player(new Actor(Actor::Type::team_1_Player, mTextures, mFonts));
-	mPlayerActor = player.get();
-	mPlayerActor->setPosition(mSpawnPosition);
-	mPlayerActor->setTeam(Actor::Team::Team_1);
-	mSceneLayers[World::Layer::Player ]->attachChild(std::move(player));
-
-	std::unique_ptr<Actor> AI_player_3(new Actor(Actor::Type::team_2_Player, mTextures, mFonts));
-	AI_player_3->setPosition(2500.f, 35.f);
-	AI_Players.push_back(AI_player_3.get());
-	AI_player_3->setTeam(Actor::Team::Team_2);
-	mSceneLayers[World::Layer::Player]->attachChild(std::move(AI_player_3));
-
 	std::unique_ptr<Actor> team_1_Hoop(new Actor(Actor::Type::hoop, mTextures, mFonts));
 	team_1_Hoop->setPosition(TEAM_1_HOOP_SPAWN);
-	mSceneLayers[World::Layer::Hoop]->attachChild(std::move(team_1_Hoop));
-
+	team_1_Hoop->setTeam(Actor::Team::Team_1);
+	
 	std::unique_ptr<Actor> team_2_Hoop(new Actor(Actor::Type::hoop, mTextures, mFonts));
 	team_2_Hoop->setPosition(TEAM_2_HOOP_SPAWN);
+	team_2_Hoop->setTeam(Actor::Team::Team_2);
 	team_2_Hoop->setDirection(Actor::Direction::Left);
-	mSceneLayers[World::Layer::Hoop]->attachChild(std::move(team_2_Hoop));
 
 	std::unique_ptr<Actor> ball(new Actor(Actor::Type::ball, mTextures, mFonts));
 	ball->setPosition(BALL_SPAWN);
 	ball->scale(0.1f, 0.1f);
 	ball->setTeam(Actor::Team::None);
 	ActiveBall = ball.get();
+
+	spawnPlayers();
+
+	mSceneLayers[World::Layer::Hoop]->attachChild(std::move(team_1_Hoop));
+	mSceneLayers[World::Layer::Hoop]->attachChild(std::move(team_2_Hoop));
 	mSceneLayers[World::Layer::Court]->attachChild(std::move(ball));
 
+	std::unique_ptr<TextNode> tmpBlueTeamScore(new TextNode(mFonts, ""));
+	std::unique_ptr<TextNode> tmpRedTeamScore(new TextNode(mFonts, ""));
+
+	blueTeamScore = tmpBlueTeamScore.get();
+	blueTeamScore->setPosition(BLUE_TEXT_SPAWN);
+
+	redTeamScore = tmpRedTeamScore.get();
+	redTeamScore->setPosition(RED_TEXT_SPAWN);
+
+	mSceneGraph.attachChild(std::move(tmpBlueTeamScore));
+	mSceneGraph.attachChild(std::move(tmpRedTeamScore));
 	// Add enemy aircraft
+}
+
+void World::spawnPlayers()
+{
+	std::unique_ptr<Actor> player(new Actor(Actor::Type::Player, mTextures, mFonts));
+	std::unique_ptr<Actor> AI_player_2(new Actor(Actor::Type::team_2_Player, mTextures, mFonts));
+	std::unique_ptr<Actor> AI_player_3(new Actor(Actor::Type::team_2_Player, mTextures, mFonts));
+	std::unique_ptr<Actor> AI_player_1(new Actor(Actor::Type::team_1_Player, mTextures, mFonts));
+	
+	player->scale(0.7, 0.5);
+	mPlayerActor = player.get();
+	mPlayerActor->setPosition(mSpawnPosition);
+	mPlayerActor->setTeam(Actor::Team::Team_1);
+	mPlayerActor->setTeamate(AI_player_1.get());
+
+	AI_player_2->scale(0.7, 0.5);
+	AI_player_2->setPosition(2500.f, 35.f);
+	AI_player_2->setTeam(Actor::Team::Team_2);
+	AI_player_2->setAssignment(AI_player_1.get());
+	AI_player_2->setTeamate(AI_player_3.get());
+	
+	AI_player_3->scale(0.7, 0.5);
+	AI_player_3->setPosition(2800.f, 100.f);
+	AI_player_3->setTeam(Actor::Team::Team_2);
+	AI_player_3->setAssignment(player.get());
+	AI_player_3->setTeamate(AI_player_2.get());
+	AI_PG = AI_player_3.get();
+
+	AI_player_1->scale(0.7, 0.5);
+	AI_player_1->setPosition(1200, 100);
+	AI_player_1->setTeam(Actor::Team::Team_1);
+	AI_player_1->setAssignment(AI_player_2.get());
+	AI_player_1->setTeamate(player.get());
+
+	AI_Players.push_back(AI_player_2.get());
+	AI_Players.push_back(AI_player_3.get());
+	AI_Players.push_back(AI_player_1.get());
+
+	Players.push_back(player.get());
+	Players.push_back(AI_player_1.get());
+	Players.push_back(AI_player_2.get());
+	Players.push_back(AI_player_3.get());
+
+	sf::Texture& Head1Texture = mTextures.get(Textures::Head1);
+	Head1Texture.setRepeated(false);
+	std::unique_ptr<SpriteNode> Head1(new SpriteNode(Head1Texture, HEAD_SIZE));
+
+	sf::Texture& Head2Texture = mTextures.get(Textures::Head2);
+	Head2Texture.setRepeated(false);
+	std::unique_ptr<SpriteNode> Head2(new SpriteNode(Head2Texture, HEAD_SIZE));
+
+	sf::Texture& Head3Texture = mTextures.get(Textures::Head3);
+	Head3Texture.setRepeated(false);
+	std::unique_ptr<SpriteNode> Head3(new SpriteNode(Head3Texture, HEAD_SIZE));
+
+	sf::Texture& Head4Texture = mTextures.get(Textures::Head4);
+	Head4Texture.setRepeated(false);
+	std::unique_ptr<SpriteNode> Head4(new SpriteNode(Head4Texture, HEAD_SIZE));
+
+	player->setHead(Head1.get());
+	AI_player_1->setHead(Head2.get());
+	AI_player_2->setHead(Head3.get());
+	AI_player_3->setHead(Head4.get());
+	
+
+	mSceneLayers[World::Layer::FrontCourt]->attachChild(std::move(player));
+	mSceneLayers[World::Layer::FrontCourt]->attachChild(std::move(AI_player_2));
+	mSceneLayers[World::Layer::BackCourt]->attachChild(std::move(AI_player_3));
+	mSceneLayers[World::Layer::BackCourt]->attachChild(std::move(AI_player_1));
+
+	mSceneLayers[Head]->attachChild(std::move(Head1));
+	mSceneLayers[Head]->attachChild(std::move(Head2));
+	mSceneLayers[Head]->attachChild(std::move(Head3));
+	mSceneLayers[Head]->attachChild(std::move(Head4));
 }
 
 

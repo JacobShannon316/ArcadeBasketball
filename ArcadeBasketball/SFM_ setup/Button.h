@@ -55,10 +55,10 @@ namespace GUI
 
 
     private:
-        Callback				mCallback;
-        sf::Sprite				mSprite;
-        sf::Text				mText;
-        bool					mIsToggle;
+        Callback				        mCallback;
+        sf::Sprite				        mSprite;
+        sf::Text				        mText;
+        bool					        mIsToggle;
         SoundPlayer& mSounds;
     };
 

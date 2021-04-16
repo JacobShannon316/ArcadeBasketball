@@ -10,7 +10,7 @@ GameState::GameState(StateStack& stack, Context context)
 	, mPlayer(*context.player)
 {
 	mPlayer.setMissionStatus(Player::MissionRunning);
-
+	//mWorld.setHeadPaths(headPath1, headPath2, headPath3, headPath4);
 	// Play game theme
 	//context.music->play(Music::MissionTheme);
 }
@@ -24,7 +24,7 @@ bool GameState::update(sf::Time dt)
 {
 	mWorld.update(dt);
 
-	if (!mWorld.hasAlivePlayer())
+	if (mWorld.isGameOver())
 	{
 		mPlayer.setMissionStatus(Player::MissionFailure);
 		requestStackPush(States::GameOver);

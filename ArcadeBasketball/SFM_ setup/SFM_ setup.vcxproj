@@ -165,6 +165,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="SceneNode.cpp" />
+    <ClCompile Include="SelectionState.cpp" />
     <ClCompile Include="SettingsState.cpp" />
     <ClCompile Include="SoundNode.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="ResourceIdentifiers.h" />
     <ClInclude Include="ResourceHolder.h" />
     <ClInclude Include="SceneNode.h" />
+    <ClInclude Include="SelectionState.h" />
     <ClInclude Include="SettingsState.h" />
     <ClInclude Include="SoundNode.h" />
     <ClInclude Include="SoundPlayer.h" />

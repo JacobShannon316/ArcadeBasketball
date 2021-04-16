@@ -14,20 +14,32 @@ namespace Textures
 	{
 		Entities,
 		TitleScreen,
+		CharacterSelectionScreen,
 		Buttons,
 
-		FinishLine,
+		CowHeadButton,
+		AlejandroHeadButton,
+		AnastasiiaHeadButton,
+		JoshHeadButton,
+
+		CowHeadButtonSelection,
+		AlejandroHeadButtonSelection,
+		AnastasiiaHeadButtonSelection,
+		JoshHeadButtonSelection,
+		JacobHeadButton,
 
 		Background,
 		Court,
 		Hoop,
 		Ball,
+		RedTeam,
+		BlueTeam,
 
-		Zombie1,
-		Zombie2,
-		Zombie3,
-		Zombie4,
-		Zombie5,
+		Head1,
+		Head2,
+		Head3,
+		Head4,
+
 		Hero2,
 	};
 }

@@ -65,6 +65,7 @@ bool BasketBallGame::isWinner()
 	{
 		return true;
 	}
+	return false;
 }
 
 std::string BasketBallGame::getWinner()

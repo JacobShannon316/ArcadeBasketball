@@ -36,29 +36,37 @@ public:
 	CommandQueue& getCommandQueue();
 
 	bool 								hasAlivePlayer() const;
+	bool								isGameOver();
+
+	void								getHeadPaths();
+
+	BasketBallGame						game;
 
 
 private:
 	void								loadTextures();
 	void								adaptPlayerPosition();
 	void								adaptNPCPosition();
+	void								adaptBallPosition();
 	void								adaptActorVelocity(Actor* actor);
 	void								adaptWorldView();
 	void								handleCollisions();
 	void								updateSounds();
 	void								updateAI();
 	void								updateBallState();
+	void								updateText();
+
+	void								score(Actor* hoop);
+	void								rebound(Actor* hoop);
 
 	void								buildScene();
-	void								addEnemies();
-	void								addEnemy(Actor::Type type, float relX, float relY);
-	void								spawnEnemies();
+	void								spawnPlayers();
 	void								destroyEntitiesOutsideView();
-	void								guideMissiles();
 	sf::FloatRect						getViewBounds() const;
 	sf::FloatRect						getBattlefieldBounds() const;
 
 	bool								InArea(sf::Vector2f area, Actor* actor);
+	Actor*								getRandomPlayer(Actor::Team team);
 
 
 private:
@@ -66,8 +74,11 @@ private:
 	{
 		Background,
 		Court,
-		Player,
+		FrontCourt,
+		BackCourt,
 		Hoop,
+		Head,
+		Text,
 		LayerCount
 	};
 
@@ -93,7 +104,7 @@ private:
 	TextureHolder						mTextures;
 	FontHolder&							mFonts;
 	SoundPlayer&						mSounds;
-	BasketBallGame						game;
+	
 	
 
 	SceneNode							mSceneGraph;
@@ -104,9 +115,12 @@ private:
 	sf::Vector2f						mSpawnPosition;
 	float								mScrollSpeed;
 	Actor*								mPlayerActor;
+	Actor*								AI_PG;
 	Actor*								ActiveBall;
+	Actor*								HeadPlayer1;
 
 	std::vector<Actor*>					AI_Players;
+	std::vector<Actor*>					Players;
 
 	std::vector<SpawnPoint>				mEnemySpawnPoints;
 	std::vector<Actor*>					mActiveEnemies;
@@ -117,4 +131,18 @@ private:
 	const sf::Vector2f					TEAM_1_HOOP_SPAWN = sf::Vector2f(3450.f, 35.f);
 	const sf::Vector2f					TEAM_2_HOOP_SPAWN = sf::Vector2f(600.f, 35.f);
 	const sf::Vector2f					BALL_SPAWN = sf::Vector2f(2000.f, 175.f);
+	const sf::Vector2f					BLUE_TEXT_SPAWN = sf::Vector2f(2000.f, -400.f);
+	const sf::Vector2f					RED_TEXT_SPAWN = sf::Vector2f(1000.f, -400.f);
+
+	const int							TEAM_1_PLAYER_COUNT = 2;
+	const int							TEAM_2_PLAYER_COUNT = 2;
+	const sf::IntRect					HEAD_SIZE = sf::IntRect(0, 0, 50, 50);
+
+	TextNode*				blueTeamScore;
+	TextNode*				redTeamScore;
+
+	std::string				head1;
+	std::string				head2;
+	std::string				head3;
+	std::string				head4;
 };

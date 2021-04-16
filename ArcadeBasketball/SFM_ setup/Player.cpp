@@ -33,8 +33,8 @@ Player::Player()
 	mKeyBinding[sf::Keyboard::Right] = MoveRight;
 	mKeyBinding[sf::Keyboard::Up] = MoveUp;
 	mKeyBinding[sf::Keyboard::Down] = MoveDown;
-	mKeyBinding[sf::Keyboard::Space] = Fire;
-	//mKeyBinding[sf::Keyboard::M] = LaunchMissile;
+	mKeyBinding[sf::Keyboard::Space] = AttackAndShoot;
+	mKeyBinding[sf::Keyboard::RShift] = Pass;
 
 	// Set initial action bindings
 	initializeActions();
@@ -108,8 +108,8 @@ void Player::initializeActions()
 	mActionBinding[MoveRight].action = derivedAction<Actor>(ActorMover(+1, 0));
 	mActionBinding[MoveUp].action = derivedAction<Actor>(ActorMover(0, -1));
 	mActionBinding[MoveDown].action = derivedAction<Actor>(ActorMover(0, +1));
-	mActionBinding[Fire].action = derivedAction<Actor>([](Actor& a, sf::Time) { a.attack(); });
-	//mActionBinding[LaunchMissile].action = derivedAction<Aircraft>([](Aircraft& a, sf::Time) { a.launchMissile(); });
+	mActionBinding[AttackAndShoot].action = derivedAction<Actor>([](Actor& a, sf::Time) { a.attack(); });
+	mActionBinding[Pass].action = derivedAction<Actor>([](Actor& a, sf::Time) { a.pass(); });
 }
 
 bool Player::isRealtimeAction(Action action)
@@ -120,7 +120,7 @@ bool Player::isRealtimeAction(Action action)
 	case MoveRight:
 	case MoveDown:
 	case MoveUp:
-	case Fire:
+	case AttackAndShoot:
 		return true;
 
 	default:

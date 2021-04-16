@@ -1,0 +1,148 @@
+{"frames": [
+
+{
+	"filename": "idle (1).png",
+	"frame": {"x":0,"y":0,"w":200,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":200,"h":277},
+	"sourceSize": {"w":200,"h":277}
+},
+{
+	"filename": "idle (2).png",
+	"frame": {"x":1206,"y":277,"w":202,"h":276},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":202,"h":276},
+	"sourceSize": {"w":202,"h":276}
+},
+{
+	"filename": "IdleWithBall (1).png",
+	"frame": {"x":400,"y":0,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "IdleWithBall (2).png",
+	"frame": {"x":601,"y":0,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "IdleWithBall (3).png",
+	"frame": {"x":802,"y":0,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "IdleWithBall (4).png",
+	"frame": {"x":1003,"y":0,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "shooting (1).png",
+	"frame": {"x":200,"y":0,"w":200,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":200,"h":277},
+	"sourceSize": {"w":200,"h":277}
+},
+{
+	"filename": "shooting (2).png",
+	"frame": {"x":1204,"y":0,"w":201,"h":275},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":275},
+	"sourceSize": {"w":201,"h":275}
+},
+{
+	"filename": "shooting (3).png",
+	"frame": {"x":1405,"y":0,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "Walk (1).png",
+	"frame": {"x":1606,"y":0,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "Walk (2).png",
+	"frame": {"x":0,"y":277,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "Walk (3).png",
+	"frame": {"x":201,"y":277,"w":201,"h":276},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":276},
+	"sourceSize": {"w":201,"h":276}
+},
+{
+	"filename": "Walk (4).png",
+	"frame": {"x":402,"y":277,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "walkWithBall (1).png",
+	"frame": {"x":603,"y":277,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "walkWithBall (2).png",
+	"frame": {"x":804,"y":277,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "walkWithBall (3).png",
+	"frame": {"x":1005,"y":277,"w":201,"h":277},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":277},
+	"sourceSize": {"w":201,"h":277}
+},
+{
+	"filename": "walkWithBall (4).png",
+	"frame": {"x":1408,"y":277,"w":202,"h":278},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":202,"h":278},
+	"sourceSize": {"w":202,"h":278}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "RedPlayer.png",
+	"format": "RGBA8888",
+	"size": {"w":1807,"h":555},
+	"scale": "0.5",
+	"smartupdate": "$TexturePacker:SmartUpdate:b7e462efffc82d75b2065191025f1cda:dd6c0933fb796f8db1071aa05610d3ec:33fa5115d2405bbedcbaa946f0e5659f$"
+}
+}

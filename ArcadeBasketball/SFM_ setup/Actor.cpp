@@ -52,8 +52,11 @@ unsigned int Actor::getCategory() const
 	case Type::hoop:
 		return Category::Hoop;
 		break;
-	case Type::team_1_Player:
+	case Type::Player:
 		return Category::Player;
+		break;
+	case Type::head:
+		return Category::Head;
 		break;
 	default:
 		return Category::AI;
@@ -105,41 +108,6 @@ float Actor::getMaxSpeed() const
 	return TABLE.at(type_).speed;
 }
 
-void Actor::stuff()
-{
-	if (gameState_ != GameState::FreeBall)
-	{
-		if (gameState_ == GameState::Offense)
-		{
-			if (team_ == Team::Team_2) 
-			{
-				direction_ = Direction::Left;
-			}
-			else 
-			{
-				direction_ = Direction::Right;
-			}
-		}
-		else
-		{
-			if (team_ == Team::Team_2)
-				direction_ = Direction::Right;
-			else
-				direction_ = Direction::Left;
-		}
-	}
-	else
-	{
-		if (state_ != State::Dead) {
-			if (direction_ == Direction::Left && getVelocity().x > 0)
-				direction_ = Direction::Right;
-			if (direction_ == Direction::Right && getVelocity().x < 0)
-				direction_ = Direction::Left;
-		}
-		
-	}
-}
-
 bool Actor::isMarkedForRemoval() const
 {
 	return false;
@@ -147,7 +115,49 @@ bool Actor::isMarkedForRemoval() const
 
 void Actor::attack()
 {
-	attack_ = true;
+	if (ball != nullptr) 
+	{
+		state_ = Actor::State::Shoot;
+		animations_[state_].restart();
+	}
+	else 
+	{
+		attack_ = true;
+		hasShootingPosition = false;
+	}
+}
+
+void Actor::pass()
+{
+	if (ball != nullptr)
+	{
+		passBall();
+	}
+	else if (teammate->ball != nullptr)
+	{
+		teammate->passBall();
+	}
+}
+
+void Actor::passBall()
+{
+	if (ball != nullptr)
+	{
+		ball->setPassing(true);
+
+		if (teammate->getPosition().y > getPosition().y)
+			ball->setPosition(getPosition().x, getPosition().y + 125);
+		else
+			ball->setPosition(getPosition().x, getPosition().y - 125);
+
+		ball->moveTo(teammate->getPosition());
+		dropBall();
+	}
+}
+
+void Actor::setHead(SpriteNode* head)
+{
+	this->head = head;
 }
 
 void Actor::setState(State state)
@@ -166,20 +176,46 @@ void Actor::setRebounding(bool rebounding)
 	this->rebounding = rebounding;
 }
 
+void Actor::setShooting(bool shooting)
+{
+	this->shooting = shooting;
+}
+
+void Actor::setPassing(bool passing)
+{
+	this->passing = passing;
+}
+
 void Actor::giveBall(Actor* ball)
 {
-	
+	ball->stopMovingToo();
+	ball->setPassing(false);
 	if (ball->getPlayer() != nullptr)
 	{
 		ball->getPlayer()->dropBall();
 	}
-	this->ball = ball;
+	this->ball = ball; 
 	ball->setPlayer(this);
 }
 
 void Actor::setPlayer(Actor* player)
 {
 	this->player = player;
+}
+
+void Actor::setAssignment(Actor* assignment)
+{
+	this->assignment = assignment;
+}
+
+void Actor::setTeamate(Actor* teammate)
+{
+	this->teammate = teammate;
+}
+
+Actor* Actor::getAssignment()
+{
+	return assignment;
 }
 
 Actor* Actor::getPlayer()
@@ -192,16 +228,23 @@ Actor* Actor::getBall()
 	return ball;
 }
 
+Actor* Actor::getTeammate()
+{
+	return teammate;
+}
+
 
 void Actor::dropBall()
 {
 	ball->setPlayer(nullptr);
+	ball->setTeam(Actor::Team::None);
 	ball = nullptr;
+	state_ = Actor::State::Idle;
 }
 
 void Actor::moveTo(sf::Vector2f position)
 {
-	//assert(movingToo);
+
 	if (type_ != Type::ball)
 	moveTooPosition = position;
 
@@ -239,6 +282,12 @@ void Actor::updateAIMovement()
 		float differenceX = getPosition().x - moveTooPosition.x;
 		float differenceY = getPosition().y - moveTooPosition.y;
 
+		if (!differenceY)
+		{
+			vx = getMaxSpeed();
+			if (differenceX > 0)
+				vx *= -1;
+		}
 		if (differenceX < 0 && differenceY < 0)
 		{
 			float radians = std::cosf(differenceX / std::hypot(differenceX, differenceY));
@@ -296,6 +345,7 @@ void Actor::ballMove(sf::Vector2f position)
 
 void Actor::shoot(Direction direction)
 {
+	shooting = true;
 	setPosition(getPosition().x, getPosition().y - 100);
 	if (direction == Direction::Right)
 		ballMove(TEAM_1_HOOP_SPAWN);
@@ -319,6 +369,7 @@ bool Actor::shotResult()
 void Actor::rebound(Actor* activeBall)
 {
 	activeBall->setRebounding(true);
+	activeBall->setShooting(false);
 	float randomXf;
 	float randomYf;
 
@@ -356,10 +407,21 @@ Actor::Team Actor::getTeam()
 
 sf::Vector2f Actor::getNewShootingPosition()
 {
-	std::uniform_int_distribution<unsigned int> randomXShooting{ 600,1000 };
+	int randomXPosition;
+	int randomYPosition;
 	std::uniform_int_distribution<unsigned int> randomYShooting{ 1,450 };
-	int randomXPosition = randomXShooting(rEng);
-	int randomYPosition = randomYShooting(rEng);
+	if (team_ == Actor::Team::Team_2)
+	{
+		std::uniform_int_distribution<unsigned int> randomXShooting{ 900,1300 };
+		randomXPosition = randomXShooting(rEng);
+		randomYPosition = randomYShooting(rEng);
+	}
+	 else
+	{
+		std::uniform_int_distribution<unsigned int> randomXShooting{ 2750,3150 };
+		randomXPosition = randomXShooting(rEng);
+		randomYPosition = randomYShooting(rEng);
+	}
 
 	shootingPosition = sf::Vector2f(randomXPosition, randomYPosition);
 	hasShootingPosition = true;
@@ -382,24 +444,53 @@ Actor::State Actor::getState() const
 	return state_;
 }
 
+Actor::GameState Actor::getGameState() const
+{
+	return gameState_;
+}
+
 Actor::Direction Actor::getDirection()
 {
 	return direction_;
 }
 
+bool Actor::isAttack() const
+{
+	return attack_;
+}
+
+bool Actor::isShooting() const
+{
+	return shooting;
+}
+
+bool Actor::isRebounding() const
+{
+	return rebounding;
+}
+
+bool Actor::isPassing() const
+{
+	return passing;
+}
+
 
 void Actor::updateStates()
 {
-	if (isDestroyed())
-		state_ = Actor::State::Dead;
-
-	if (state_ == Actor::State::Attack && animations_[state_].isFinished())
+	if (attack_)
+	{
+		attack_ = false;
+	}
+	if (state_ == Actor::State::Shoot && animations_[state_].isFinished())
 	{
 		if (ball != nullptr)
 		{
+			
 			ball->shoot(direction_);
+			hasShootingPosition = false;
 			dropBall();
 		}
+		animations_[state_].restart();
 		state_ = Actor::State::Walk;
 	}
 	if (Actor::State::score == state_ && animations_[state_].isFinished())
@@ -407,22 +498,66 @@ void Actor::updateStates()
 		state_ = Actor::State::Idle;
 	}
 
-	if (attack_ && state_ != Actor::State::Attack) {
-		state_ = Actor::State::Attack;
-		animations_[state_].restart();
-		attack_ = false;
+	if (ball != nullptr)
+	{
+		if (state_ == Actor::State::Idle || state_ == Actor::State::Walk)
+			state_ = Actor::State::IdleWithBall;
+
+		if (length(getVelocity()) > 0.1f)
+			state_ = Actor::State::WalkWithBall;
+
+		if (state_ == Actor::State::WalkWithBall && length(getVelocity()) < 0.1f)
+			state_ = Actor::State::Idle;
 	}
-	if (state_ == Actor::State::Idle && length(getVelocity()) > 0.1f)
-		state_ = Actor::State::Walk;
+	else
+	{
+		if (state_ == Actor::State::Idle && length(getVelocity()) > 0.1f)
+			state_ = Actor::State::Walk;
+		if (state_ == Actor::State::Walk && length(getVelocity()) < 0.1f)
+			state_ = Actor::State::Idle;
+	}
 }
 
 void Actor::updateDirection(sf::Time dt)
 {
 	auto rec = animations_.at(state_).update(dt);
-	if (getCategory() == Category::Ball)
+	if (getCategory() == Category::AI)
 	{
-
-		stuff();
+		if (gameState_ != GameState::FreeBall)
+		{
+			if (gameState_ == GameState::Offense)
+			{
+				if (team_ == Team::Team_2)
+				{
+					direction_ = Direction::Left;
+				}
+				else
+				{
+					direction_ = Direction::Right;
+				}
+			}
+			else
+			{
+				if (team_ == Team::Team_2)
+					direction_ = Direction::Left;
+				else
+					direction_ = Direction::Right;
+			}
+		}
+		else
+		{
+			if (direction_ == Direction::Left && getVelocity().x > 0)
+				direction_ = Direction::Right;
+			if (direction_ == Direction::Right && getVelocity().x < 0)
+				direction_ = Direction::Left;
+		}
+	}
+	else
+	{
+		if (direction_ == Direction::Left && getVelocity().x > 0)
+			direction_ = Direction::Right;
+		if (direction_ == Direction::Right && getVelocity().x < 0)
+			direction_ = Direction::Left;
 	}
 	
 
@@ -461,8 +596,7 @@ void Actor::updateCurrent(sf::Time dt, CommandQueue& commands)
 	updateStates();
 	updateDirection(dt);
 
-	if (state_ != State::Dead)
-		Entity::updateCurrent(dt, commands);
+	Entity::updateCurrent(dt, commands);
 
 	updateMovementPattern(dt);
 
@@ -474,9 +608,22 @@ void Actor::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 	if (type_ == Actor::Type::ball) 
 		updateBallMovement();
+	updateHead();
+}
+
+void Actor::updateHead()
+{
+	if (head != nullptr)
+	{
+		head->setPosition(getPosition().x - 25, getPosition().y - 60);
+	}
 }
 
 void Actor::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	if (type_ == Actor::Type::ball && team_ != Actor::Team::None) 
+	{
+		return;
+	}
 	target.draw(sprite_, states);
 }

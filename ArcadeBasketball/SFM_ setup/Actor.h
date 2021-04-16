@@ -5,6 +5,7 @@
 #include "ResourceIdentifiers.h"
 #include "Animation2.h"
 #include "TextNode.h"
+#include "SpriteNode.h"
 
 #include <SFML/Graphics/Sprite.hpp>
 
@@ -12,11 +13,11 @@ class Actor : public Entity
 {
 public:
 	enum class Type {
-		team_1_Player, team_2_Player, ball, hoop, shadow
+		Player, team_1_Player, team_2_Player, ball, hoop, head
 	};
 
 	enum class State {
-		Attack, Dead, Idle, Rise, Walk, Run, Jump, count, score
+		Attack, Shoot, Idle, Rise, Walk, IdleWithBall, WalkWithBall, count, score
 	};
 	enum class GameState {
 		Offense, Defense, FreeBall, Reset
@@ -37,18 +38,26 @@ public:
 	sf::FloatRect			getBoundingRect() const override;
 	float					getMaxSpeed() const;
 
-	void					stuff();
 	bool					isMarkedForRemoval() const override;
 	void					attack();
+	void					pass();
+	void					passBall();
+	void					setHead(SpriteNode* head);
 	void					setState(State state);
 	void					setGameState(GameState gameState);
 	void					setDirection(Direction direction);
 	void					setRebounding(bool rebounding);
+	void					setShooting(bool shooting);
+	void					setPassing(bool passing);
 
 	void					giveBall(Actor* ball);
 	void					setPlayer(Actor* player);
+	void					setAssignment(Actor* assignment);
+	void					setTeamate(Actor* teammate);
+	Actor*					getAssignment();
 	Actor*					getPlayer();
 	Actor*					getBall();
+	Actor*					getTeammate();
 	void					dropBall();
 	
 
@@ -71,16 +80,21 @@ public:
 	sf::Vector2f			getShootingPosition() const;
 	bool					isShootingPosition() const;
 
-	Actor::State getState() const;
-	Actor::Direction getDirection();
+	Actor::State			getState() const;
+	Actor::GameState		getGameState() const;
+	Actor::Direction		getDirection();
 
-
+	bool					isAttack() const;
+	bool					isShooting() const;
+	bool					isRebounding() const;
+	bool					isPassing() const;
 
 private:
 	void					updateStates();
 	void					updateDirection(sf::Time dt);
 	void					updateBallMovement();
 	void					updateCurrent(sf::Time dt, CommandQueue& commands) override;
+	void					updateHead();
 	void					drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 	void					updateMovementPattern(sf::Time dt);
 
@@ -94,12 +108,17 @@ private:
 	GameState							gameState_;
 	Actor*								ball;
 	Actor*								player;
+	Actor*								assignment;
+	Actor*								teammate;
+	SpriteNode*							head;
 
 	float								travelDistance_;
 	std::size_t							directionIndex_;
 	bool								attack_;
 	bool								movingToo = false;
 	bool								rebounding = false;
+	bool								passing = false;
+	bool								shooting = false;
 	bool								hasShootingPosition = false;
 	bool								score;
 	sf::Vector2f						targetDirection;

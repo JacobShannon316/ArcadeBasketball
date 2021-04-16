@@ -17,9 +17,8 @@ namespace GUI
 		, mText("", context.fonts->get(Fonts::Main), 16)
 		, mIsToggle(false)
 		, mSounds(*context.sounds)
-	{
+	{;
 		changeTexture(Normal);
-
 		sf::FloatRect bounds = mSprite.getLocalBounds();
 		mText.setPosition(bounds.width / 2.f, bounds.height / 2.f);
 	}
@@ -104,7 +103,15 @@ namespace GUI
 
 	void Button::changeTexture(Type buttonType)
 	{
-		sf::IntRect textureRect(0, 50 * buttonType, 200, 50);
+		if (buttonType != Type::Normal) 
+		{
+			mText.setFillColor(sf::Color::Red);
+		}
+		else
+		{
+			mText.setFillColor(sf::Color::White);
+		}
+		sf::IntRect textureRect(0, 0, 100, 100);
 		mSprite.setTextureRect(textureRect);
 	}
 

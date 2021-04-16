@@ -9,6 +9,7 @@
 #include "PauseState.h"
 #include "SettingsState.h"
 #include "GameOverState.h"
+#include "SelectionState.h"
 
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
@@ -31,7 +32,20 @@ Application::Application()
 	mFonts.load(Fonts::Main, "Media/Sansation.ttf");
 
 	mTextures.load(Textures::TitleScreen, "Media/Textures/TitleScreen.png");
+	mTextures.load(Textures::CharacterSelectionScreen, "Media/Textures/CharacterSelectionBackground.png");
 	mTextures.load(Textures::Buttons, "Media/Textures/Buttons.png");
+
+	mTextures.load(Textures::CowHeadButton, "Media/Textures/CowButton.png");
+	mTextures.load(Textures::AlejandroHeadButton, "Media/Textures/AlejandroButton.png");
+	mTextures.load(Textures::AnastasiiaHeadButton, "Media/Textures/AnastasiiaButton.png");
+	mTextures.load(Textures::JoshHeadButton, "Media/Textures/JoshButton.png"); 
+
+	mTextures.load(Textures::CowHeadButtonSelection, "Media/Textures/CowButtonSelected.png");
+	mTextures.load(Textures::AlejandroHeadButtonSelection, "Media/Textures/AlejandroButtonSelected.png");
+	mTextures.load(Textures::AnastasiiaHeadButtonSelection, "Media/Textures/AnastasiiaButtonSelected.png");
+	mTextures.load(Textures::JoshHeadButtonSelection, "Media/Textures/JoshButtonSelected.png");
+	mTextures.load(Textures::JacobHeadButton, "Media/Textures/JacobButton.png");
+
 
 	mStatisticsText.setFont(mFonts.get(Fonts::Main));
 	mStatisticsText.setPosition(5.f, 5.f);
@@ -115,6 +129,7 @@ void Application::registerStates()
 {
 	mStateStack.registerState<TitleState>(States::Title);
 	mStateStack.registerState<MenuState>(States::Menu);
+	mStateStack.registerState<SelectionState>(States::Selection);
 	mStateStack.registerState<GameState>(States::Game);
 	mStateStack.registerState<PauseState>(States::Pause);
 	mStateStack.registerState<SettingsState>(States::Settings);

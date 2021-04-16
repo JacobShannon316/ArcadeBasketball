@@ -17,6 +17,7 @@ namespace Category
 		Player					= 1 << 10,
 		Hoop					= 1 << 11,
 		AI						= 1 << 12,
+		Head					= 1 << 13,
 		Actor,
 
 		Aircraft = PlayerAircraft | AlliedAircraft | EnemyAircraft,
