@@ -1,4 +1,4 @@
-AnastasiiaHead.png
-AlejandroHead.png
-JoshHead.png
 JacobHead.png
+JoshHead.png
+CowHead.png
+CowHead.png
