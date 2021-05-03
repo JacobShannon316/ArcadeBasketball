@@ -379,10 +379,12 @@ void World::updateAI()
 					else
 						AI->passBall();
 				}
-				else if (!AI->isMovingToo() && AI->getState() != Actor::State::Shoot)
+				else if (AI->getState() == Actor::State::Shoot)
 				{
-					AI->moveTo(moveTooPosition);
+
 				}
+				else
+					AI->moveTo(moveTooPosition);
 			}
 			if (ActiveBall->isShooting() || ActiveBall->isRebounding())
 			{
